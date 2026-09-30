@@ -16,7 +16,7 @@ LEVELS = {"Beginner": 1, "Intermediate": 2, "Advanced": 3}
 GOAL_OPTIONS = ["Muscle Gain", "Fat Loss", "Strength", "Endurance", "General Fitness"]
 
 TIME_OPTIONS = ["Early Morning", "Morning", "Afternoon", "Evening", "Night", "No Preference"]
-TIME_VALUES =  ["6:30 AM", "9:00 AM", "2:00 PM", "6:00 PM", "8:30 PM", "6:00 PM"]
+TIME_VALUES = ["6:30 AM", "9:00 AM", "2:00 PM", "6:00 PM", "8:30 PM", "6:00 PM"]
 
 DURATION_OPTIONS = ["30 minutes", "45 minutes", "60 minutes", "90 minutes"]
 DURATION_VALUES =  [30, 45, 60, 90]
@@ -371,8 +371,13 @@ def limit_training_days(days, experience):
         return days
 
     # Spread the kept days across the user's full selection, including its ends.
-    return [days[(i * (len(days) - 1) + (limit - 1) // 2) // (limit - 1)]
-            for i in range(limit)]
+    kept_days = []
+    last_index = len(days) - 1
+    for i in range(limit):
+        # Integer division keeps the selection evenly spaced.
+        index = (i * last_index + (limit - 1) // 2) // (limit - 1)
+        kept_days.append(days[index])
+    return kept_days
 
 
 def generate_split(num_days, goal):
@@ -427,7 +432,9 @@ def pick_exercise(database, muscle, user, used_in_workout, times_used):
 def get_exercise_count(duration, experience):
     counts = {30: 4, 45: 5, 60: 6, 90: 8}
     count = counts[duration]
-    return min(count, 7) if experience == "Beginner" else count
+    if experience == "Beginner":
+        return min(count, 7)
+    return count
 
 
 def get_cardio_minutes(goal, duration):
@@ -702,6 +709,8 @@ def display_final_plan(timetable, user):
     print("Goal: " + user["goal"])
     print("Workout Days: " + str(len(user["days"])) + " (" + ", ".join(user["days"]) + ")")
     print("Duration: " + str(user["duration"]) + " minutes")
+    print("The selected duration guides exercise and cardio volume; it is not a timer.")
+    print("Actual time varies with warm-up, pace, rest, and transitions.")
     if user["time_label"] == "No Preference":
         print("Preferred Time: No preference (" + user["time_text"] + " used)")
     else:
@@ -769,8 +778,15 @@ def display_final_plan(timetable, user):
 # ------------------------------------------------------------------
 
 def has_back_to_back_days(days):
-    for i in range(len(days) - 1):
-        if DAYS.index(days[i + 1]) - DAYS.index(days[i]) == 1:
+    if len(days) < 2:
+        return False
+
+    # Check each selected day and the next one in the weekly cycle, including Sunday -> Monday.
+    selected_days = set(days)
+    for day in days:
+        day_index = DAYS.index(day)
+        next_day = DAYS[(day_index + 1) % len(DAYS)]
+        if next_day in selected_days:
             return True
     return False
 

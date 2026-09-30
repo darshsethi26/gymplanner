@@ -22,13 +22,13 @@ A command-line Python program that creates a weekly gym timetable and workout pl
 
 1. Install Python 3 and Visual Studio Code if they are not already installed.
 2. Open the folder containing the Gym Planner source in VS Code.
-3. Open the source file named `gymplanner_altered` (or the filename supplied with your copy). The source has no `.py` extension, but it contains Python code.
+3. Open the source file named `gym_planner.py` 
 4. Open **Terminal > New Terminal** in VS Code.
-5. In the terminal, run `python gymplanner_altered`. On some systems, use `python3 gymplanner_altered` or `py gymplanner_altered`.
+5. In the terminal, run `python  gym_planner.py`. On some systems, use `python3 gym_planner.py` or `py gym_planner.py`.
 6. Follow the numbered menus and prompts. For available days, enter at least two day numbers separated by spaces, for example `1 3 5`.
 7. Review the timetable and workouts. At the replacement prompt, choose **Yes** to change an exercise or **No** to finish.
 
-If you rename the source file to `gymplanner.py`, use `python gymplanner.py` in step 5.
+
 
 ## Input checks
 
